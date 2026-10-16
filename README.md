@@ -55,30 +55,27 @@ To add a resource type, update `src/content.config.ts`, the CMS select options, 
 
 ## GitHub and Netlify
 
-This workspace is not initialized with a Git remote or pushed. Create the repository in the intended account, then:
+The source is in the public GitHub repository [roberteugenejorgenson/publishing-services-resource-hub](https://github.com/roberteugenejorgenson/publishing-services-resource-hub), on the `main` branch. To work on another machine, clone it with:
 
 ```sh
-git init -b main
-git add .
-git commit -m "Build Publishing Services Resource Hub"
-git remote add origin https://github.com/OWNER/REPOSITORY.git
-git push -u origin main
+git clone https://github.com/roberteugenejorgenson/publishing-services-resource-hub.git
+cd publishing-services-resource-hub
+npm install
 ```
 
-Import the repository in Netlify, set `main` as the production branch, and deploy. `netlify.toml` defines `npm run build`, `dist`, Node 22, and basic security headers. Netlify's Git integration deploys pushes to the production branch and creates previews for branches/PRs. Set `SITE_URL` to the production domain; then verify the home page, department routes, `/sitemap.xml`, and `/robots.txt`. Add a custom domain and TLS from the Netlify UI when ready.
+The repository is ready to import in Netlify. Select `main` as the production branch. `netlify.toml` defines `npm run build`, `dist`, Node 22, and basic security headers. Netlify's Git integration deploys pushes to the production branch and creates previews for branches/PRs. After Netlify assigns a site hostname, set `SITE_URL` to that production domain; then verify the home page, department routes, `/sitemap.xml`, and `/robots.txt`. Add a custom domain and TLS from the Netlify UI when ready.
 
-Repository creation, account connection, and live deployment remain manual because no GitHub or Netlify account access was available in this workspace.
+The GitHub repository has been created and the initial source has been pushed. Netlify account connection and live deployment still need to be completed.
 
 ## Decap CMS and authentication
 
-The admin is `/admin/`. It uses the Decap GitHub backend with Netlify's hosted GitHub OAuth endpoint; it does not use Git Gateway. Authentication is not operational until the site and OAuth provider are connected and tested.
+The admin is `/admin/`. It uses the Decap GitHub backend with Netlify's hosted GitHub OAuth endpoint; it does not use Git Gateway. The repository is configured below, but authentication is not operational until the site and OAuth provider are connected and tested.
 
-1. Create the GitHub repository, then replace `YOUR_GITHUB_ORG/YOUR_REPOSITORY` in `public/admin/config.yml` with `owner/repository`.
-2. Connect the repository in Netlify, choose `main`, and confirm build command `npm run build` and publish directory `dist`.
-3. Set `site_domain`, `site_url`, and `display_url` in `public/admin/config.yml` to the actual Netlify hostname.
-4. In Netlify project configuration, enable its GitHub OAuth authentication provider. Register the GitHub OAuth application following Netlify's instructions; store its client ID and secret in Netlify's provider settings. Never put the secret in the repository or browser config.
-5. Give editors repository write access. Editors sign in at `https://YOUR-SITE/admin/` using their GitHub account.
-6. Test login, draft, preview, publish, upload, and deletion with a non-sensitive test record. Confirm the CMS commit appears in GitHub and Netlify deploys it, then remove the test content.
+1. Connect `roberteugenejorgenson/publishing-services-resource-hub` in Netlify, choose `main`, and confirm build command `npm run build` and publish directory `dist`.
+2. Set `site_domain`, `site_url`, and `display_url` in `public/admin/config.yml` to the actual Netlify hostname.
+3. In Netlify project configuration, enable its GitHub OAuth authentication provider. Register the GitHub OAuth application following Netlify's instructions; store its client ID and secret in Netlify's provider settings. Never put the secret in the repository or browser config.
+4. Give editors repository write access. Editors sign in at `https://YOUR-SITE/admin/` using their GitHub account.
+5. Test login, draft, preview, publish, upload, and deletion with a non-sensitive test record. Confirm the CMS commit appears in GitHub and Netlify deploys it, then remove the test content.
 
 Until setup and testing are complete, the admin shell can load but cannot authenticate. OAuth credentials were unavailable, so the integration is not claimed as operational. Consult [Decap's GitHub backend guide](https://decapcms.org/docs/github-backend/) and [Astro's Netlify guide](https://docs.astro.build/en/guides/deploy/netlify/) during setup.
 

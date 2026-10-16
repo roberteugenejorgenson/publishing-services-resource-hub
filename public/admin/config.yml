@@ -1,6 +1,6 @@
 backend:
   name: github
-  repo: YOUR_GITHUB_ORG/YOUR_REPOSITORY
+  repo: roberteugenejorgenson/publishing-services-resource-hub
   branch: main
   # Netlify's GitHub OAuth provider handles the server-side OAuth exchange.
   # Keep the client secret in the Netlify UI, never in this public file.
