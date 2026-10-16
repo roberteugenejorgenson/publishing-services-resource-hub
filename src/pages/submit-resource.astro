@@ -2,9 +2,6 @@
 import { ArrowLeft, ArrowRight, Upload } from '@lucide/astro';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import { departments } from '../data/departments';
-
-const requestedDepartment = Astro.url.searchParams.get('department');
-const initialDepartment = departments.some(({ slug }) => slug === requestedDepartment) ? requestedDepartment : '';
 ---
 <BaseLayout title="Submit a Resource | Publishing Services" description="Send a resource for review by the Publishing Services Resource Hub editors." active="submit-resource" noindex>
   <section class="submission-page">
@@ -34,7 +31,7 @@ const initialDepartment = departments.some(({ slug }) => slug === requestedDepar
           <span>Department <b aria-hidden="true">*</b></span>
           <select name="department" id="department" required>
             <option value="">Choose a department</option>
-            {departments.map((department) => <option value={department.slug} selected={initialDepartment === department.slug}>{department.name}</option>)}
+            {departments.map((department) => <option value={department.slug}>{department.name}</option>)}
           </select>
         </label>
 
@@ -69,6 +66,11 @@ const initialDepartment = departments.some(({ slug }) => slug === requestedDepar
 <script>
   const fileInput = document.querySelector<HTMLInputElement>('[data-resource-file]');
   const form = fileInput?.form;
+  const departmentSelect = document.querySelector<HTMLSelectElement>('#department');
+  const requestedDepartment = new URLSearchParams(window.location.search).get('department');
+  if (departmentSelect && requestedDepartment && [...departmentSelect.options].some((option) => option.value === requestedDepartment)) {
+    departmentSelect.value = requestedDepartment;
+  }
   const maxFileSize = 7 * 1024 * 1024;
   const allowedExtensions = ['.pdf', '.doc', '.docx', '.ppt', '.pptx'];
 
