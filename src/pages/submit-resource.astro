@@ -1,0 +1,125 @@
+---
+import { ArrowLeft, ArrowRight, Upload } from '@lucide/astro';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { departments } from '../data/departments';
+
+const requestedDepartment = Astro.url.searchParams.get('department');
+const initialDepartment = departments.some(({ slug }) => slug === requestedDepartment) ? requestedDepartment : '';
+---
+<BaseLayout title="Submit a Resource | Publishing Services" description="Send a resource for review by the Publishing Services Resource Hub editors." active="submit-resource" noindex>
+  <section class="submission-page">
+    <div class="container submission-container">
+      <a class="back-link" href="/"><ArrowLeft size={15} aria-hidden="true" /> Resource Hub</a>
+      <div class="submission-heading">
+        <span class="eyebrow">Contribute to the library</span>
+        <h1>Submit a resource</h1>
+        <p>Share a document with the Publishing Services team. An editor will review it before anything is added to the public library.</p>
+      </div>
+
+      <div class="review-notice" role="note">
+        <strong>Before you upload</strong>
+        <p>Only submit files approved for public distribution. Do not include confidential, restricted, or personal information. Submissions and uploaded files are sent to and stored in the site owner’s Netlify Forms dashboard for review; they are not published automatically.</p>
+      </div>
+
+      <form name="resource-submissions" method="POST" action="/submission-received/" enctype="multipart/form-data" data-netlify="true" netlify-honeypot="bot-field" class="submission-form">
+        <input type="hidden" name="form-name" value="resource-submissions" />
+        <div class="honeypot" aria-hidden="true"><label>Leave this field empty<input name="bot-field" tabindex="-1" autocomplete="off" /></label></div>
+
+        <label class="form-field">
+          <span>Resource title <b aria-hidden="true">*</b></span>
+          <input name="title" type="text" required maxlength="160" autocomplete="off" />
+        </label>
+
+        <label class="form-field">
+          <span>Department <b aria-hidden="true">*</b></span>
+          <select name="department" id="department" required>
+            <option value="">Choose a department</option>
+            {departments.map((department) => <option value={department.slug} selected={initialDepartment === department.slug}>{department.name}</option>)}
+          </select>
+        </label>
+
+        <label class="form-field">
+          <span>Category <b aria-hidden="true">*</b></span>
+          <input name="category" type="text" required maxlength="100" placeholder="For example, Templates & Forms" />
+          <small>Use a department category if one fits, or suggest a new one.</small>
+        </label>
+
+        <label class="form-field">
+          <span>What is this resource? <b aria-hidden="true">*</b></span>
+          <textarea name="description" required rows="4" maxlength="1200" placeholder="Briefly describe what it contains and who it may help."></textarea>
+        </label>
+
+        <label class="form-field">
+          <span>Resource file <b aria-hidden="true">*</b></span>
+          <input name="resource-file" type="file" accept=".pdf,.doc,.docx,.ppt,.pptx,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/vnd.ms-powerpoint,application/vnd.openxmlformats-officedocument.presentationml.presentation" required data-resource-file />
+          <small>PDF, Word, or PowerPoint files up to 7 MB. Larger submissions may not be accepted by the form.</small>
+        </label>
+
+        <label class="form-field">
+          <span>Tags <small>(optional)</small></span>
+          <input name="tags" type="text" maxlength="300" placeholder="Separate tags with commas" />
+        </label>
+
+        <button class="submit-button" type="submit"><Upload size={17} aria-hidden="true" /> Send for review <ArrowRight size={16} aria-hidden="true" /></button>
+      </form>
+    </div>
+  </section>
+</BaseLayout>
+
+<script>
+  const fileInput = document.querySelector<HTMLInputElement>('[data-resource-file]');
+  const form = fileInput?.form;
+  const maxFileSize = 7 * 1024 * 1024;
+  const allowedExtensions = ['.pdf', '.doc', '.docx', '.ppt', '.pptx'];
+
+  function validateFile() {
+    const file = fileInput?.files?.[0];
+    if (!fileInput) return;
+    if (!file) {
+      fileInput.setCustomValidity('');
+      return;
+    }
+    const extension = file.name.slice(file.name.lastIndexOf('.')).toLowerCase();
+    fileInput.setCustomValidity(!allowedExtensions.includes(extension)
+      ? 'Choose a PDF, Word, or PowerPoint file.'
+      : file.size > maxFileSize
+        ? 'Choose a file smaller than 7 MB.'
+        : '');
+  }
+
+  fileInput?.addEventListener('change', validateFile);
+  if (form) form.addEventListener('submit', (event) => {
+    validateFile();
+    if (!form.checkValidity()) {
+      event.preventDefault();
+      form.reportValidity();
+    }
+  });
+</script>
+
+<style>
+  .submission-page{min-height:calc(100vh - 150px);padding:32px 0 76px;background:linear-gradient(130deg,#f4f6ff,#fbfaff 58%,#f8f9fd)}
+  .submission-container{max-width:780px}
+  .back-link{display:inline-flex;align-items:center;gap:7px;color:#667590;font-size:.8rem;font-weight:650}
+  .back-link:hover{color:#4664d3}
+  .submission-heading{margin:30px 0 22px}
+  .submission-heading h1{font-size:clamp(2.2rem,5vw,3rem);letter-spacing:-.055em;color:#1c2944;margin:8px 0}
+  .submission-heading p{max-width:670px;color:#697792;font-size:.97rem;line-height:1.7;margin:0}
+  .review-notice{padding:17px 19px;background:#fff9ea;border:1px solid #f2e2b9;border-radius:13px;color:#604e25;margin-bottom:21px}
+  .review-notice strong{font-size:.82rem}
+  .review-notice p{font-size:.79rem;line-height:1.6;margin:5px 0 0}
+  .submission-form{display:grid;grid-template-columns:1fr 1fr;gap:17px;padding:23px;background:#fff;border:1px solid #e7ebf3;border-radius:17px;box-shadow:0 8px 28px #29395d0d}
+  .form-field{display:grid;align-content:start;gap:7px;color:#4d5c76;font-size:.77rem;font-weight:700}
+  label.form-field:nth-of-type(1),label.form-field:nth-of-type(4),label.form-field:nth-of-type(5){grid-column:1/-1}
+  .form-field b{color:#8b56bf}
+  .form-field input,.form-field select,.form-field textarea{width:100%;min-height:44px;padding:10px 12px;border:1px solid #dfe5ef;border-radius:9px;background:#fff;color:#25334d;font-size:.82rem;font-weight:450}
+  .form-field input[type=file]{padding:9px;background:#fafbfe}
+  .form-field textarea{min-height:110px;resize:vertical;line-height:1.5}
+  .form-field input:focus,.form-field select:focus,.form-field textarea:focus{outline:3px solid #8b5cf644;border-color:#8799ea}
+  .form-field small{font-size:.7rem;color:#7b879b;font-weight:450;line-height:1.45}
+  .form-field span small{display:inline;font-size:.7rem}
+  .submit-button{grid-column:1/-1;justify-self:start;display:inline-flex;align-items:center;gap:9px;min-height:45px;padding:0 16px;border:0;border-radius:10px;background:#4568e8;color:#fff;font-size:.82rem;font-weight:700;cursor:pointer;box-shadow:0 5px 13px #4568e82b}
+  .submit-button:hover{background:#3658d4}
+  .honeypot{position:absolute;left:-10000px;width:1px;height:1px;overflow:hidden}
+  @media(max-width:600px){.submission-page{padding:23px 0 55px}.submission-heading{margin-top:25px}.submission-form{grid-template-columns:1fr;padding:18px;gap:15px}.form-field,.submit-button{grid-column:1}}
+</style>

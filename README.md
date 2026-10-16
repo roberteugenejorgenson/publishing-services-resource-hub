@@ -6,7 +6,7 @@ A static, publicly accessible resource library for Publishing Services teams. As
 
 - Responsive pages with keyboard-accessible navigation and reduced-motion support.
 - Department resource libraries with search, category/type filters, sorting, and clear-filter actions.
-- An “Add a resource” action on each department page that opens the CMS new-resource form with that department selected.
+- A public “Submit a resource” form linked from every department page, with the department preselected and submissions held for editorial review.
 - Global search across published titles, descriptions, departments, categories, and tags, including partial matches and one-character typos.
 - Featured and recently updated resources on the home page.
 - Real file links only. PDFs open in the browser; supplied PDF renditions can accompany Word and PowerPoint downloads.
@@ -44,7 +44,11 @@ Two example records are included as unpublished demonstration drafts. They conta
 
 ### Add, replace, or remove a resource
 
-In `/admin/`, create a resource, complete its metadata, choose department/category/type, upload a real file, set dates, and publish when approved. The “Add a resource” button on each department page opens this form with the matching department preselected. To replace a file, edit the file field and `lastUpdated`; test the new link after deployment. Remove an old file only when no other resource uses it. To remove a resource, unpublish it for review or delete its entry, then remove any unreferenced file. Git retains the committed history.
+Authorized editors can use `/admin/` to create a resource, complete its metadata, choose department/category/type, upload a real file, set dates, and publish when approved. To replace a file, edit the file field and `lastUpdated`; test the new link after deployment. Remove an old file only when no other resource uses it. To remove a resource, unpublish it for review or delete its entry, then remove any unreferenced file. Git retains the committed history.
+
+Anyone can use `/submit-resource/` to send a PDF, Word, or PowerPoint file for review. Submissions and uploaded files are stored in the Netlify Forms dashboard, not in the public repository, and are not published automatically. Review submissions under the Netlify project’s **Forms → resource-submissions** page; download an approved file, then create its CMS entry in `/admin/` and publish it. Reject or delete submissions that are unsuitable. The form requests only resource metadata and a file, does not collect submitter contact details, and accepts files up to 7 MB to stay below Netlify Forms’ 8 MB request limit. Submitters are instructed to provide only material approved for public distribution. Netlify may retain its own account-level form usage limits depending on the project’s plan.
+
+Netlify must detect the form during a production deploy. If the form does not appear under **Forms**, enable form detection in the project’s Forms settings and redeploy. See [Netlify Forms setup](https://docs.netlify.com/manage/forms/setup/) and [submission management](https://docs.netlify.com/manage/forms/submissions/) for current details.
 
 The CMS upload base folder is `public/resources/`. Keep filenames short, lowercase, and hyphenated. The preferred folder organization is `public/resources/<department>/documents/` (and `presentations/` or `templates/`). The configured CMS uploader currently uses one shared base folder; adjust the media folder configuration if editors need separate destination folders. Verify that each file URL starts `/resources/` and matches the actual location.
 

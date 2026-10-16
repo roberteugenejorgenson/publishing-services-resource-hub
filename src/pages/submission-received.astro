@@ -1,0 +1,25 @@
+---
+import { ArrowLeft, CircleCheck } from '@lucide/astro';
+import BaseLayout from '../layouts/BaseLayout.astro';
+---
+<BaseLayout title="Submission Received | Publishing Services" description="Your resource submission has been received for review." active="submit-resource" noindex>
+  <section class="thanks-page">
+    <div class="container thanks-card">
+      <span class="success-icon"><CircleCheck size={27} aria-hidden="true" /></span>
+      <span class="eyebrow">Submission received</span>
+      <h1>Thank you for sharing.</h1>
+      <p>Your resource has been sent to the site owner for review. It will not appear in the public library unless an editor approves and publishes it.</p>
+      <a href="/" class="return-link"><ArrowLeft size={15} aria-hidden="true" /> Return to the Resource Hub</a>
+    </div>
+  </section>
+</BaseLayout>
+<style>
+  .thanks-page{min-height:calc(100vh - 150px);display:grid;place-items:center;padding:55px 0;background:linear-gradient(130deg,#f4f6ff,#fbfaff 58%,#f8f9fd)}
+  .thanks-card{max-width:610px;padding:42px 38px;background:#fff;border:1px solid #e7ebf3;border-radius:20px;box-shadow:0 12px 36px #29395d12;text-align:center}
+  .success-icon{width:57px;height:57px;margin:0 auto 20px;display:grid;place-items:center;border-radius:17px;background:#edf8f3;color:#328868}
+  .thanks-card h1{font-size:clamp(2rem,5vw,2.7rem);letter-spacing:-.05em;color:#1c2944;margin:9px 0}
+  .thanks-card p{max-width:450px;margin:0 auto;color:#697792;font-size:.9rem;line-height:1.7}
+  .return-link{display:inline-flex;align-items:center;gap:7px;margin-top:25px;color:#4b64cf;font-size:.83rem;font-weight:700}
+  .return-link:hover{color:#3048b2}
+  @media(max-width:600px){.thanks-card{padding:34px 22px}}
+</style>
