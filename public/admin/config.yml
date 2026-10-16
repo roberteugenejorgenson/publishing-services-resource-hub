@@ -6,10 +6,10 @@ backend:
   # Keep the client secret in the Netlify UI, never in this public file.
   base_url: https://api.netlify.com
   auth_endpoint: auth
-  site_domain: your-site.netlify.app
+  site_domain: publishing-services-resource-hub.netlify.app
 
-site_url: https://your-site.netlify.app
-display_url: https://your-site.netlify.app
+site_url: https://publishing-services-resource-hub.netlify.app
+display_url: https://publishing-services-resource-hub.netlify.app
 logo_url: /favicon.svg
 publish_mode: editorial_workflow
 media_folder: /public/resources

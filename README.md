@@ -63,21 +63,18 @@ cd publishing-services-resource-hub
 npm install
 ```
 
-The repository is ready to import in Netlify. Select `main` as the production branch. `netlify.toml` defines `npm run build`, `dist`, Node 22, and basic security headers. Netlify's Git integration deploys pushes to the production branch and creates previews for branches/PRs. After Netlify assigns a site hostname, set `SITE_URL` to that production domain; then verify the home page, department routes, `/sitemap.xml`, and `/robots.txt`. Add a custom domain and TLS from the Netlify UI when ready.
-
-The GitHub repository has been created and the initial source has been pushed. Netlify account connection and live deployment still need to be completed.
+The public GitHub repository is connected to Netlify and deploys the `main` branch. The production site is [publishing-services-resource-hub.netlify.app](https://publishing-services-resource-hub.netlify.app/). `netlify.toml` defines `npm run build`, `dist`, Node 22, and basic security headers. Netlify's Git integration deploys pushes to the production branch and creates previews for branches/PRs. The Netlify `SITE_URL` environment variable should match the production domain.
 
 ## Decap CMS and authentication
 
-The admin is `/admin/`. It uses the Decap GitHub backend with Netlify's hosted GitHub OAuth endpoint; it does not use Git Gateway. The repository is configured below, but authentication is not operational until the site and OAuth provider are connected and tested.
+The admin is `/admin/`. It uses the Decap GitHub backend with Netlify's hosted GitHub OAuth endpoint; it does not use Git Gateway. The repository and production domain are configured below. To complete login, a GitHub OAuth application must be configured in Netlify.
 
-1. Connect `roberteugenejorgenson/publishing-services-resource-hub` in Netlify, choose `main`, and confirm build command `npm run build` and publish directory `dist`.
-2. Set `site_domain`, `site_url`, and `display_url` in `public/admin/config.yml` to the actual Netlify hostname.
-3. In Netlify project configuration, enable its GitHub OAuth authentication provider. Register the GitHub OAuth application following Netlify's instructions; store its client ID and secret in Netlify's provider settings. Never put the secret in the repository or browser config.
-4. Give editors repository write access. Editors sign in at `https://YOUR-SITE/admin/` using their GitHub account.
-5. Test login, draft, preview, publish, upload, and deletion with a non-sensitive test record. Confirm the CMS commit appears in GitHub and Netlify deploys it, then remove the test content.
+1. In GitHub account settings, register an OAuth app. Set its homepage to `https://publishing-services-resource-hub.netlify.app/` and its authorization callback to `https://api.netlify.com/auth/done`.
+2. In Netlify project configuration, open **Access & security → OAuth → Authentication providers** and install the GitHub provider with that OAuth app's client ID and secret. Keep the secret in Netlify; never put it in this repository or browser config.
+3. Give each editor GitHub write access to `roberteugenejorgenson/publishing-services-resource-hub`. Editors then sign in at `https://publishing-services-resource-hub.netlify.app/admin/` with their GitHub account. Only repository collaborators with write access can commit through this CMS.
+4. Test login, draft, preview, publish, and upload with a non-sensitive test record. Confirm the CMS commit appears in GitHub and Netlify deploys it, then remove the test content.
 
-Until setup and testing are complete, the admin shell can load but cannot authenticate. OAuth credentials were unavailable, so the integration is not claimed as operational. Consult [Decap's GitHub backend guide](https://decapcms.org/docs/github-backend/) and [Astro's Netlify guide](https://docs.astro.build/en/guides/deploy/netlify/) during setup.
+Consult [Decap's GitHub backend guide](https://decapcms.org/docs/github-backend/) and [Netlify's OAuth provider guide](https://docs.netlify.com/manage/security/secure-access-to-sites/oauth-provider-tokens/) during setup.
 
 ## Branding and troubleshooting
 
