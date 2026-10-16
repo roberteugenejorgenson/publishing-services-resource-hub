@@ -9,7 +9,7 @@ resourceType: powerpoint
 fileUrl: /resources/acctpgminfographic.pptx
 previewUrl: /resources/acctpgminfographic.pdf
 featured: true
-published: false
+published: true
 dateAdded: 2026-10-16
 lastUpdated: 2026-10-16
 ---
