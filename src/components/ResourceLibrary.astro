@@ -1,0 +1,67 @@
+---
+import ResourceCard from './ResourceCard.astro';
+import { fileLabel } from '../lib/resources';
+import type { ResourceView } from '../lib/resources';
+interface Props { resources: ResourceView[]; department: { name: string } }
+const { resources, department } = Astro.props;
+const categories = [...new Set(resources.map((resource) => resource.category))].sort();
+const types = [...new Set(resources.map((resource) => resource.resourceType))].sort();
+---
+<section class="library" data-library>
+  <div class="filters-panel">
+    <label class="search-label"><span>Search resources</span><span class="search-wrap"><span aria-hidden="true">⌕</span><input type="search" data-search placeholder="Search titles, details, or tags" autocomplete="off" /></span></label>
+    <label><span>Category</span><select data-category><option value="">All categories</option>{categories.map((category) => <option value={category}>{category}</option>)}</select></label>
+    <label><span>File type</span><select data-type><option value="">All types</option>{types.map((type) => <option value={type}>{fileLabel(type)}</option>)}</select></label>
+    <label><span>Sort by</span><select data-sort><option value="recent">Recently updated</option><option value="az">Alphabetical: A–Z</option><option value="za">Alphabetical: Z–A</option></select></label>
+    <button class="clear-button" type="button" data-clear>Clear filters</button>
+  </div>
+  <div class="results-bar"><p><strong data-count>{resources.length}</strong> <span data-count-label>resources</span></p><span>{department.name} library</span></div>
+  <div class="resource-grid" data-grid>{resources.map((resource) => <div class="resource-item" data-resource data-title={resource.title.toLowerCase()} data-description={resource.description.toLowerCase()} data-category={resource.category} data-type={resource.resourceType} data-updated={resource.lastUpdated.valueOf()} data-tags={resource.tags.join(' ').toLowerCase()}><ResourceCard resource={resource} /></div>)}</div>
+  <div class="empty-state" data-empty hidden><span aria-hidden="true">⌕</span><h3>No resources match</h3><p>Try a different search or clear some filters to see more resources.</p><button type="button" data-clear>Clear all filters</button></div>
+</section>
+<script>
+  document.querySelectorAll<HTMLElement>('[data-library]').forEach((library) => {
+    const search = library.querySelector<HTMLInputElement>('[data-search]')!;
+    const category = library.querySelector<HTMLSelectElement>('[data-category]')!;
+    const type = library.querySelector<HTMLSelectElement>('[data-type]')!;
+    const sort = library.querySelector<HTMLSelectElement>('[data-sort]')!;
+    const items = [...library.querySelectorAll<HTMLElement>('[data-resource]')];
+    const grid = library.querySelector<HTMLElement>('[data-grid]')!;
+    const empty = library.querySelector<HTMLElement>('[data-empty]')!;
+    const count = library.querySelector<HTMLElement>('[data-count]')!;
+    const countLabel = library.querySelector<HTMLElement>('[data-count-label]')!;
+    const clear = () => { search.value = ''; category.value = ''; type.value = ''; sort.value = 'recent'; update(); search.focus(); };
+    const update = () => {
+      const query = search.value.trim().toLowerCase();
+      const visible = items.filter((item) => (!query || fuzzyMatch(`${item.dataset.title} ${item.dataset.description} ${item.dataset.tags} ${item.dataset.category}`, query)) && (!category.value || item.dataset.category === category.value) && (!type.value || item.dataset.type === type.value));
+      visible.sort((a,b) => sort.value === 'az' ? a.dataset.title!.localeCompare(b.dataset.title!) : sort.value === 'za' ? b.dataset.title!.localeCompare(a.dataset.title!) : Number(b.dataset.updated) - Number(a.dataset.updated));
+      items.forEach((item) => { item.hidden = !visible.includes(item); });
+      visible.forEach((item) => grid.append(item));
+      count.textContent = String(visible.length); countLabel.textContent = visible.length === 1 ? 'resource' : 'resources';
+      empty.hidden = visible.length > 0; grid.hidden = visible.length === 0;
+    };
+    [search, category, type, sort].forEach((control) => control.addEventListener('input', update));
+    library.querySelectorAll<HTMLButtonElement>('[data-clear]').forEach((button) => button.addEventListener('click', clear));
+    document.querySelectorAll<HTMLAnchorElement>('[data-category-preset]').forEach((link) => link.addEventListener('click', () => {
+      const requested = link.dataset.categoryPreset;
+      const matching = [...category.options].find((option) => option.value === requested);
+      if (matching) { category.value = requested!; update(); }
+    }));
+    update();
+  });
+  function fuzzyMatch(text: string, query: string) {
+    const words = text.toLowerCase().split(/[^a-z0-9]+/).filter(Boolean);
+    return query.split(/\s+/).every((term) => words.some((word) => word.includes(term) || (term.length >= 5 && editDistanceAtMostOne(word, term))));
+  }
+  function editDistanceAtMostOne(a: string, b: string) {
+    if (Math.abs(a.length - b.length) > 1) return false;
+    let i = 0, j = 0, edits = 0;
+    while (i < a.length && j < b.length) { if (a[i] === b[j]) { i++; j++; continue; } if (++edits > 1) return false; if (a.length > b.length) i++; else if (b.length > a.length) j++; else { i++; j++; } }
+    return edits + (i < a.length || j < b.length ? 1 : 0) <= 1;
+  }
+</script>
+<style>
+  .filters-panel{padding:18px;background:#fff;border:1px solid #e8ecf4;border-radius:16px;display:grid;grid-template-columns:minmax(220px,1.5fr) repeat(3,minmax(130px,1fr)) auto;gap:12px;align-items:end;box-shadow:0 4px 16px #1d326107}.filters-panel label{display:grid;gap:7px;color:#64718a;font-size:.72rem;font-weight:700}.filters-panel input,.filters-panel select{width:100%;height:42px;padding:0 12px;border:1px solid #e1e6ef;border-radius:9px;background:#fff;color:#33415c;font-size:.8rem}.search-wrap{position:relative}.search-wrap>span{position:absolute;left:12px;top:7px;font-size:1.5rem;line-height:1;color:#8793a7}.search-wrap input{padding-left:36px}.clear-button{height:42px;padding:0 13px;border:0;background:transparent;color:#556bd0;font-size:.78rem;font-weight:700;cursor:pointer}.results-bar{display:flex;justify-content:space-between;align-items:center;margin:24px 2px 14px;color:#8792a6;font-size:.78rem}.results-bar p{margin:0;color:#526078}.results-bar strong{color:#25334d}.resource-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}.resource-item[hidden]{display:none!important}.empty-state{padding:65px 20px;text-align:center;background:#fff;border:1px dashed #d8dfed;border-radius:18px}.empty-state[hidden]{display:none}.empty-state>span{font-size:2.2rem;color:#7185d7}.empty-state h3{margin:12px 0 6px}.empty-state p{color:#77849a;font-size:.9rem}.empty-state button{border:0;background:#eef2ff;color:#4964d1;border-radius:9px;padding:10px 14px;font-weight:700;cursor:pointer}
+  @media(max-width:1000px){.filters-panel{grid-template-columns:repeat(2,minmax(0,1fr))}.resource-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.clear-button{justify-self:start}}
+  @media(max-width:600px){.filters-panel{grid-template-columns:1fr}.resource-grid{grid-template-columns:1fr}.results-bar{margin-top:18px}}
+</style>

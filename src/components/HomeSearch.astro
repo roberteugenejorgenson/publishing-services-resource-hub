@@ -1,0 +1,36 @@
+---
+const { resources } = Astro.props;
+import type { ResourceView } from '../lib/resources';
+interface Props { resources: ResourceView[] }
+const data = resources.map((r) => ({ id:r.id, title:r.title, description:r.description, department:r.departmentName, slug:r.department, category:r.category, tags:r.tags }));
+---
+<section class="global-search" aria-labelledby="global-search-heading">
+  <div class="search-copy"><span class="eyebrow">Find what you need</span><h2 id="global-search-heading">Search across the hub</h2><p>Search resource titles, topics, categories, and tags in every department.</p></div>
+  <label class="global-search-box"><span class="sr-only">Search all resources</span><span aria-hidden="true">⌕</span><input id="global-search-input" type="search" placeholder="Try “onboarding” or “roadmap”" autocomplete="off" /><kbd>↵</kbd></label>
+  <div id="global-search-results" class="global-search-results" aria-live="polite" hidden></div>
+</section>
+<script define:vars={{ data }}>
+  const input = document.querySelector('#global-search-input');
+  const results = document.querySelector('#global-search-results');
+  input?.addEventListener('input', () => {
+    const query = input.value.trim().toLowerCase();
+    if (!query) { results.hidden = true; results.innerHTML = ''; return; }
+    const matches = data.filter((r) => fuzzyMatch(`${r.title} ${r.description} ${r.department} ${r.category} ${r.tags.join(' ')}`, query)).slice(0, 8);
+    results.innerHTML = matches.length ? matches.map((r) => `<a class="search-hit" href="/${encodeURIComponent(r.slug)}/#${encodeURIComponent(r.id)}"><span><strong>${escapeHtml(r.title)}</strong><small>${escapeHtml(r.department)} · ${escapeHtml(r.category)}</small></span><b aria-hidden="true">→</b></a>`).join('') : '<p class="no-hit">No matching resources. Try another keyword.</p>';
+    results.hidden = false;
+  });
+  function escapeHtml(s) { return s.replace(/[&<>"']/g, (c) => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+  function fuzzyMatch(text, query) {
+    const words = text.toLowerCase().split(/[^a-z0-9]+/).filter(Boolean);
+    return query.split(/\s+/).every((term) => words.some((word) => word.includes(term) || (term.length >= 5 && editDistanceAtMostOne(word, term))));
+  }
+  function editDistanceAtMostOne(a, b) {
+    if (Math.abs(a.length - b.length) > 1) return false;
+    let i = 0, j = 0, edits = 0;
+    while (i < a.length && j < b.length) { if (a[i] === b[j]) { i++; j++; continue; } if (++edits > 1) return false; if (a.length > b.length) i++; else if (b.length > a.length) j++; else { i++; j++; } }
+    return edits + (i < a.length || j < b.length ? 1 : 0) <= 1;
+  }
+</script>
+<style>
+  .global-search{padding:32px;background:#fff;border:1px solid #e8ecf4;border-radius:22px;box-shadow:0 8px 26px #1c32630b;display:grid;grid-template-columns:1fr minmax(280px,.9fr);gap:18px 40px;align-items:center}.search-copy h2{font-size:1.4rem;margin:8px 0}.search-copy p{font-size:.87rem;color:#738097;margin:0}.global-search-box{height:54px;border:1px solid #dce3f0;border-radius:12px;display:flex;align-items:center;padding:0 14px;gap:10px;color:#7784a0}.global-search-box>span{font-size:1.7rem;line-height:1}.global-search-box input{border:0;outline:none;flex:1;min-width:0;font-size:.85rem;color:#29364f}.global-search-box input:focus-visible{outline:none}.global-search-box kbd{font-size:.7rem;color:#919bb0;border:1px solid #e3e7ef;border-radius:5px;padding:2px 6px}.global-search-results{grid-column:1/-1;max-height:340px;overflow:auto;border:1px solid #edf0f5;border-radius:12px}.global-search-results[hidden]{display:none}.search-hit{display:flex;align-items:center;justify-content:space-between;padding:12px 15px;border-bottom:1px solid #edf0f5}.search-hit:last-child{border:0}.search-hit:hover{background:#f7f8ff}.search-hit strong,.search-hit small{display:block}.search-hit strong{font-size:.84rem}.search-hit small{font-size:.72rem;color:#7f8ba1;margin-top:4px}.search-hit b{color:#536dd2}.no-hit{padding:12px 15px;color:#7b879b;font-size:.84rem}@media(max-width:750px){.global-search{grid-template-columns:1fr;padding:24px;gap:18px}}
+</style>

@@ -1,0 +1,25 @@
+---
+import { Download, ExternalLink, Eye, FileText, Presentation, Video, Link as LinkIcon } from '@lucide/astro';
+import { formatDate, fileLabel } from '../lib/resources';
+import type { ResourceView } from '../lib/resources';
+interface Props { resource: ResourceView }
+const { resource } = Astro.props;
+const Icon = resource.resourceType === 'powerpoint' ? Presentation : resource.resourceType === 'video' ? Video : resource.resourceType === 'external' ? LinkIcon : FileText;
+const available = Boolean(resource.fileUrl || resource.externalUrl);
+const actionUrl = resource.externalUrl ?? resource.fileUrl;
+const download = Boolean(resource.fileUrl && resource.resourceType !== 'external');
+---
+<article class="resource-card" id={resource.id}>
+  <div class="card-top"><span class="file-icon"><Icon size={20} stroke-width={1.8} aria-hidden="true" /></span><span class="type-pill">{fileLabel(resource.resourceType)}</span></div>
+  <h3>{resource.title}</h3><p class="description">{resource.description}</p>
+  <div class="resource-meta"><span>{resource.category}</span><span aria-hidden="true">·</span><span>Updated {formatDate(resource.lastUpdated)}</span></div>
+  <div class="card-actions">
+    {resource.resourceType === 'pdf' && resource.fileUrl && <a class="text-action" href={resource.fileUrl} target="_blank" rel="noopener noreferrer"><Eye size={16} aria-hidden="true" /> Preview</a>}
+    {resource.previewUrl && <a class="text-action" href={resource.previewUrl} target="_blank" rel="noopener noreferrer"><Eye size={16} aria-hidden="true" /> Preview</a>}
+    {available && <a class="download-action" href={actionUrl} download={download ? '' : undefined} target={download ? undefined : '_blank'} rel={!download ? 'noopener noreferrer' : undefined}><span>{download ? 'Download' : 'Open resource'}</span>{download ? <Download size={16} aria-hidden="true" /> : <ExternalLink size={16} aria-hidden="true" />}</a>}
+    {!available && <span class="unavailable">File not yet available</span>}
+  </div>
+</article>
+<style>
+  .resource-card{min-width:0;padding:21px;background:#fff;border:1px solid #e8ecf4;border-radius:18px;box-shadow:0 4px 16px #1d32610a;transition:transform .2s,box-shadow .2s,border-color .2s;display:flex;flex-direction:column}.resource-card:hover{transform:translateY(-3px);border-color:#d8e0f7;box-shadow:0 14px 30px #253b6714}.card-top{display:flex;justify-content:space-between;align-items:center}.file-icon{width:42px;height:42px;border-radius:13px;background:#eef2ff;color:#4966d5;display:grid;place-items:center}.type-pill{padding:5px 9px;border-radius:999px;background:#f2f4f8;color:#63708a;font-size:.7rem;font-weight:700}.resource-card h3{font-size:1.02rem;line-height:1.4;letter-spacing:-.025em;margin:18px 0 8px;color:#202d46}.description{color:#69768e;font-size:.85rem;line-height:1.6;margin:0 0 18px}.resource-meta{margin-top:auto;display:flex;align-items:center;gap:7px;flex-wrap:wrap;font-size:.72rem;color:#78859a}.card-actions{border-top:1px solid #edf0f5;margin-top:17px;padding-top:14px;display:flex;align-items:center;justify-content:space-between;gap:8px}.text-action,.download-action{display:inline-flex;align-items:center;justify-content:center;gap:7px;font-size:.8rem;font-weight:700;color:#4864d1}.download-action{padding:9px 12px;border-radius:9px;background:#f0f3ff;white-space:nowrap}.download-action:hover{background:#e4eaff}.unavailable{font-size:.76rem;color:#8792a5;font-style:italic}
+</style>

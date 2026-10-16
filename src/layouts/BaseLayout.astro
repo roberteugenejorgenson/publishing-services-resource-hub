@@ -1,0 +1,31 @@
+---
+import SiteHeader from '../components/SiteHeader.astro';
+import SiteFooter from '../components/SiteFooter.astro';
+import '../styles/global.css';
+const { title = 'Publishing Services Resource Hub', description = 'Your centralized destination for Publishing Services resources.', active = 'home' } = Astro.props;
+const canonical = new URL(Astro.url.pathname, Astro.site ?? 'https://publishing-services.example.com').toString();
+---
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="generator" content={Astro.generator} />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Skip to content</a>
+    <SiteHeader active={active} />
+    <main id="main"><slot /></main>
+    <SiteFooter />
+  </body>
+</html>
+<style is:global>
+  .skip-link{position:absolute;left:1rem;top:-5rem;padding:.75rem 1rem;background:#fff;z-index:50;border-radius:.5rem}.skip-link:focus{top:1rem}
+</style>

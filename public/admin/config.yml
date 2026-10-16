@@ -1,0 +1,62 @@
+backend:
+  name: github
+  repo: YOUR_GITHUB_ORG/YOUR_REPOSITORY
+  branch: main
+  # Netlify's GitHub OAuth provider handles the server-side OAuth exchange.
+  # Keep the client secret in the Netlify UI, never in this public file.
+  base_url: https://api.netlify.com
+  auth_endpoint: auth
+  site_domain: your-site.netlify.app
+
+site_url: https://your-site.netlify.app
+display_url: https://your-site.netlify.app
+logo_url: /favicon.svg
+publish_mode: editorial_workflow
+media_folder: /public/resources
+public_folder: /resources
+slug:
+  encoding: "ascii"
+  clean_accents: true
+  sanitize_replacement: "-"
+
+collections:
+  - name: resources
+    label: Resources
+    label_singular: Resource
+    folder: src/content/resources
+    create: true
+    delete: true
+    extension: md
+    format: frontmatter
+    slug: "{{slug}}"
+    summary: "{{title}} · {{department}} · {{category}}"
+    sortable_fields: [title, department, category, lastUpdated]
+    fields:
+      - { label: Resource ID, name: id, widget: string, hint: "Unique, lowercase ID such as global-ops-guide. Keep it stable when editing." }
+      - { label: Title, name: title, widget: string }
+      - { label: Description, name: description, widget: text }
+      - label: Department
+        name: department
+        widget: select
+        options:
+          - { label: Global Operations, value: global-operations }
+          - { label: Product Management, value: product-management }
+      - { label: Category, name: category, widget: string, hint: "Use an existing department category, or enter a new category." }
+      - { label: Tags, name: tags, widget: list, required: false }
+      - label: Resource type
+        name: resourceType
+        widget: select
+        options:
+          - { label: PDF, value: pdf }
+          - { label: Word document, value: word }
+          - { label: PowerPoint, value: powerpoint }
+          - { label: Video (future), value: video }
+          - { label: External link, value: external }
+      - { label: File, name: fileUrl, widget: file, required: false, media_folder: /public/resources, public_folder: /resources }
+      - { label: PDF preview (for Word or PowerPoint), name: previewUrl, widget: file, required: false, media_folder: /public/resources, public_folder: /resources }
+      - { label: External URL, name: externalUrl, widget: string, required: false }
+      - { label: Thumbnail, name: thumbnail, widget: image, required: false }
+      - { label: Featured, name: featured, widget: boolean, default: false, required: false }
+      - { label: Published, name: published, widget: boolean, default: false }
+      - { label: Date added, name: dateAdded, widget: datetime, format: "YYYY-MM-DD", date_format: "YYYY-MM-DD", time_format: false }
+      - { label: Last updated, name: lastUpdated, widget: datetime, format: "YYYY-MM-DD", date_format: "YYYY-MM-DD", time_format: false }

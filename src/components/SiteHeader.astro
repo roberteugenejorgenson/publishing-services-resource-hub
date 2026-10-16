@@ -1,0 +1,20 @@
+---
+const { active = 'home' } = Astro.props;
+const links = [{ href: '/', label: 'Home', key: 'home' }, { href: '/global-operations/', label: 'Global Operations', key: 'global-operations' }, { href: '/product-management/', label: 'Product Management', key: 'product-management' }];
+---
+<header class="site-header">
+  <div class="container header-inner">
+    <a class="brand" href="/" aria-label="Publishing Services Resource Hub home"><span class="brand-mark" aria-hidden="true">P</span><span><strong>Publishing Services</strong><small>Resource Hub</small></span></a>
+    <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="primary-nav"><span class="menu-icon" aria-hidden="true">☰</span><span class="sr-only">Open navigation</span></button>
+    <nav id="primary-nav" aria-label="Main navigation"><ul>{links.map(({ href, label, key }) => <li><a href={href} class:list={{ active: active === key }} aria-current={active === key ? 'page' : undefined}>{label}</a></li>)}</ul></nav>
+  </div>
+</header>
+<script>
+  const toggle = document.querySelector<HTMLButtonElement>('.menu-toggle');
+  const nav = document.querySelector<HTMLElement>('#primary-nav');
+  toggle?.addEventListener('click', () => { const open = toggle.getAttribute('aria-expanded') !== 'true'; toggle.setAttribute('aria-expanded', String(open)); nav?.classList.toggle('open', open); toggle.querySelector('.menu-icon')!.textContent = open ? '×' : '☰'; toggle.querySelector('.sr-only')!.textContent = open ? 'Close navigation' : 'Open navigation'; });
+</script>
+<style>
+  .site-header{position:sticky;top:0;z-index:20;background:rgba(255,255,255,.94);backdrop-filter:blur(14px);border-bottom:1px solid #e9edf5}.header-inner{height:76px;display:flex;align-items:center;justify-content:space-between}.brand{display:flex;align-items:center;gap:11px}.brand-mark{width:40px;height:40px;border-radius:13px;display:grid;place-items:center;color:#fff;font-size:1.2rem;font-weight:800;background:linear-gradient(145deg,#4568e8,#8561e8);box-shadow:0 5px 14px #536ee044}.brand strong,.brand small{display:block}.brand strong{font-size:.92rem;letter-spacing:-.02em}.brand small{font-size:.72rem;color:#71809a;margin-top:2px}.site-header ul{display:flex;gap:7px;margin:0;padding:0;list-style:none}.site-header nav a{display:block;padding:10px 14px;color:#53617b;font-size:.87rem;font-weight:600;border-radius:10px;transition:background .18s,color .18s}.site-header nav a:hover,.site-header nav a.active{background:#eef2ff;color:#3e5cc9}.menu-toggle{display:none;border:0;background:#f0f3fa;border-radius:10px;width:44px;height:44px;font-size:1.3rem;color:#35415a}.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+  @media(max-width:700px){.header-inner{height:68px}.menu-toggle{display:block}#primary-nav{display:none;position:absolute;top:67px;left:0;right:0;padding:8px 20px 16px;background:white;border-bottom:1px solid #e9edf5;box-shadow:0 12px 20px #15234a10}#primary-nav.open{display:block}.site-header ul{display:grid;gap:4px}.site-header nav a{padding:13px}}
+</style>

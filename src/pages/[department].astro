@@ -1,0 +1,19 @@
+---
+import { getCollection } from 'astro:content';
+import { ArrowLeft, ArrowRight, Layers, Globe } from '@lucide/astro';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import ResourceLibrary from '../components/ResourceLibrary.astro';
+import { departments } from '../data/departments';
+const { department } = Astro.props;
+const entries = await getCollection('resources', ({ data }) => data.published && data.department === department.slug);
+const resources = entries.map(({ id, data }) => ({...data, id: data.id || id, departmentName: department.name})).sort((a,b) => b.lastUpdated.valueOf() - a.lastUpdated.valueOf());
+const Icon = department.slug === 'global-operations' ? Globe : Layers;
+export function getStaticPaths() { return departments.map((department) => ({ params: { department: department.slug }, props: { department } })); }
+---
+<BaseLayout title={`${department.name} Resources | Publishing Services`} description={department.description} active={department.slug}>
+  <section class="page-hero"><div class="container"><a class="back-link" href="/"><ArrowLeft size={15} aria-hidden="true" /> All departments</a><div class="page-title-row"><div><span class="eyebrow">Department library</span><h1>{department.name}</h1><p>{department.description}</p></div><span class="title-icon"><Icon size={27} stroke-width={1.6} aria-hidden="true" /></span></div><div class="category-chips" aria-label="Resource categories">{department.categories.map((category) => <a href="#resource-library" data-category-preset={category}>{category}<ArrowRight size={12} aria-hidden="true" /></a>)}</div></div></section>
+  <section class="container library-section" id="resource-library"><div class="library-heading"><div><span class="eyebrow">Browse the library</span><h2>Resources for your work</h2></div><p>Search, filter, and sort the resources available to your team.</p></div><ResourceLibrary resources={resources} department={department} /></section>
+</BaseLayout>
+<style>
+  .page-hero{background:linear-gradient(115deg,#f0f4ff,#f7f3ff 65%,#fafbff);border-bottom:1px solid #e9ecf6;padding:29px 0 35px}.back-link{display:inline-flex;align-items:center;gap:7px;color:#667590;font-size:.78rem;font-weight:650}.back-link:hover{color:#4664d3}.page-title-row{display:flex;align-items:center;justify-content:space-between;gap:25px;margin-top:28px}.page-title-row h1{font-size:clamp(2.2rem,4vw,3rem);letter-spacing:-.055em;color:#1c2944;margin:7px 0 8px}.page-title-row p{font-size:.95rem;color:#697792;line-height:1.65;max-width:730px;margin:0}.title-icon{width:64px;height:64px;border:1px solid #dfe5fb;border-radius:19px;background:#ffffffa8;display:grid;place-items:center;color:#526bd5;flex:none}.category-chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:24px}.category-chips a{display:inline-flex;align-items:center;gap:6px;border:1px solid #dfe4f0;background:#ffffffad;border-radius:999px;padding:8px 11px;color:#5a6881;font-size:.72rem;font-weight:650}.category-chips a:hover{border-color:#becbf8;color:#4b64cf}.library-section{padding-top:42px}.library-heading{display:flex;align-items:end;justify-content:space-between;gap:20px;margin-bottom:20px}.library-heading h2{margin:7px 0 0;font-size:1.55rem;letter-spacing:-.04em;color:#202d46}.library-heading p{font-size:.82rem;color:#7b879b;margin:0}@media(max-width:650px){.page-hero{padding-top:22px}.page-title-row{margin-top:24px}.title-icon{width:52px;height:52px;border-radius:15px}.page-title-row p{font-size:.88rem}.category-chips{gap:7px}.category-chips a{font-size:.68rem}.library-section{padding-top:32px}.library-heading{align-items:flex-start;flex-direction:column;gap:8px}}
+</style>
