@@ -2,7 +2,7 @@
 import SiteHeader from '../components/SiteHeader.astro';
 import SiteFooter from '../components/SiteFooter.astro';
 import '../styles/global.css';
-const { title = 'Publishing Services Resource Hub', description = 'Your centralized destination for Publishing Services resources.', active = 'home', noindex = false } = Astro.props;
+const { title = 'Publishing Services Resource Hub', description = 'Your centralized destination for Publishing Services resources.', active = 'home' } = Astro.props;
 const canonical = new URL(Astro.url.pathname, Astro.site ?? 'https://publishing-services.example.com').toString();
 ---
 <!doctype html>
@@ -13,7 +13,7 @@ const canonical = new URL(Astro.url.pathname, Astro.site ?? 'https://publishing-
     <meta name="generator" content={Astro.generator} />
     <title>{title}</title>
     <meta name="description" content={description} />
-    {noindex && <meta name="robots" content="noindex, nofollow" />}
+    <meta name="robots" content="noindex" />
     <link rel="canonical" href={canonical} />
     <meta property="og:type" content="website" />
     <meta property="og:title" content={title} />
