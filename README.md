@@ -6,6 +6,7 @@ A static, publicly accessible resource library for Publishing Services teams. As
 
 - Responsive pages with keyboard-accessible navigation and reduced-motion support.
 - Department resource libraries with search, category/type filters, sorting, and clear-filter actions.
+- An “Add a resource” action on each department page that opens the CMS new-resource form with that department selected.
 - Global search across published titles, descriptions, departments, categories, and tags, including partial matches and one-character typos.
 - Featured and recently updated resources on the home page.
 - Real file links only. PDFs open in the browser; supplied PDF renditions can accompany Word and PowerPoint downloads.
@@ -43,7 +44,7 @@ Two example records are included as unpublished demonstration drafts. They conta
 
 ### Add, replace, or remove a resource
 
-In `/admin/`, create a resource, complete its metadata, choose department/category/type, upload a real file, set dates, and publish when approved. To replace a file, edit the file field and `lastUpdated`; test the new link after deployment. Remove an old file only when no other resource uses it. To remove a resource, unpublish it for review or delete its entry, then remove any unreferenced file. Git retains the committed history.
+In `/admin/`, create a resource, complete its metadata, choose department/category/type, upload a real file, set dates, and publish when approved. The “Add a resource” button on each department page opens this form with the matching department preselected. To replace a file, edit the file field and `lastUpdated`; test the new link after deployment. Remove an old file only when no other resource uses it. To remove a resource, unpublish it for review or delete its entry, then remove any unreferenced file. Git retains the committed history.
 
 The CMS upload base folder is `public/resources/`. Keep filenames short, lowercase, and hyphenated. The preferred folder organization is `public/resources/<department>/documents/` (and `presentations/` or `templates/`). The configured CMS uploader currently uses one shared base folder; adjust the media folder configuration if editors need separate destination folders. Verify that each file URL starts `/resources/` and matches the actual location.
 
