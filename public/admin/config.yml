@@ -10,7 +10,7 @@ backend:
 
 site_url: https://publishing-services-resource-hub.netlify.app
 display_url: https://publishing-services-resource-hub.netlify.app
-logo_url: /favicon.svg
+logo_url: /images/publishing-services-seal.png
 publish_mode: editorial_workflow
 media_folder: /public/resources
 public_folder: /resources
