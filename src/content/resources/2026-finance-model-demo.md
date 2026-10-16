@@ -1,5 +1,5 @@
 ---
-id: 2026_finance_product_RJ
+id: finance-model-2026
 title: 2026 Finance Model Demo
 description: This explains the new 2027 finance model. The target audience was
   Area Product Managers.
