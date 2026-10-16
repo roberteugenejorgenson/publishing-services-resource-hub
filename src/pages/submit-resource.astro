@@ -63,20 +63,20 @@ import { departments } from '../data/departments';
   </section>
 </BaseLayout>
 
-<script>
-  const fileInput = document.querySelector<HTMLInputElement>('[data-resource-file]');
-  const form = fileInput?.form;
-  const departmentSelect = document.querySelector<HTMLSelectElement>('#department');
+<script is:inline>
+  const fileInput = document.querySelector('input[data-resource-file]');
+  const form = fileInput?.closest('form');
+  const departmentSelect = document.querySelector('#department');
   const requestedDepartment = new URLSearchParams(window.location.search).get('department');
-  if (departmentSelect && requestedDepartment && [...departmentSelect.options].some((option) => option.value === requestedDepartment)) {
+  if (departmentSelect instanceof HTMLSelectElement && requestedDepartment && [...departmentSelect.options].some((option) => option.value === requestedDepartment)) {
     departmentSelect.value = requestedDepartment;
   }
   const maxFileSize = 7 * 1024 * 1024;
   const allowedExtensions = ['.pdf', '.doc', '.docx', '.ppt', '.pptx'];
 
   function validateFile() {
-    const file = fileInput?.files?.[0];
-    if (!fileInput) return;
+    if (!(fileInput instanceof HTMLInputElement)) return;
+    const file = fileInput.files[0];
     if (!file) {
       fileInput.setCustomValidity('');
       return;
@@ -90,7 +90,7 @@ import { departments } from '../data/departments';
   }
 
   fileInput?.addEventListener('change', validateFile);
-  if (form) form.addEventListener('submit', (event) => {
+  if (form instanceof HTMLFormElement) form.addEventListener('submit', (event) => {
     validateFile();
     if (!form.checkValidity()) {
       event.preventDefault();
