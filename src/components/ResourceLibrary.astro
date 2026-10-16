@@ -42,11 +42,6 @@ const types = [...new Set(resources.map((resource) => resource.resourceType))].s
     };
     [search, category, type, sort].forEach((control) => control.addEventListener('input', update));
     library.querySelectorAll<HTMLButtonElement>('[data-clear]').forEach((button) => button.addEventListener('click', clear));
-    document.querySelectorAll<HTMLAnchorElement>('[data-category-preset]').forEach((link) => link.addEventListener('click', () => {
-      const requested = link.dataset.categoryPreset;
-      const matching = [...category.options].find((option) => option.value === requested);
-      if (matching) { category.value = requested!; update(); }
-    }));
     update();
   });
   function fuzzyMatch(text: string, query: string) {
